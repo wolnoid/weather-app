@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= user.username %>'s weather lists</title>
+  </head>
+  <body>
+    <%- include('../partials/_navbar.ejs') %>
+    <h1><%= user.username %>'s weather lists</h1>
+    <% if (lists.length > 0) {%>
+    <ul>
+        <% lists.forEach((list) => { %>
+        <li>
+            <a href="/lists/<%= list._id %>"><%= list.name %></a>
+        </li>
+        <% }) %>
+    </ul>
+      <% } else {%>
+        <% if (user._id) { %>
+            You haven't created any lists yet.
+      <% }} %>
+    <p>
+      <a href="../lists/new">Create a new list</a>
+    </p>
+  </body>
+</html>

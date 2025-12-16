@@ -1,0 +1,12 @@
+<!-- partials/_navbar.ejs -->
+
+<nav>
+  <a href="/">Home</a>
+  <% if (user) { %>
+  <a href="/users/profile">My Weather</a>
+  <a href="/auth/sign-out">Sign Out</a>
+  <% } else { %>
+  <a href="/auth/sign-up">Sign Up</a>
+  <a href="/auth/sign-in">Sign In</a>
+  <% } %>
+</nav>

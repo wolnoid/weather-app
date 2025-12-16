@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= user.username %>'s <%= list.name %> list</title>
+  </head>
+  <body>
+    <%- include('../partials/_navbar.ejs') %>
+  <h1>Edit a List</h1>
+    <form action="/lists/<%= list._id %>?_method=PUT" method="POST">
+      <p>
+        <label for="name">List name:</label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          value="<%= list.name || '' %>"
+        />
+        <br>
+
+        <label for="description">Description:</label>
+        <textarea
+          name="description"
+          id="description"
+          ><%= list.description || '' %></textarea>
+        <br>
+
+        <button type="submit">Edit List</button>
+      </p>
+    </form>
+  </body>
+</html>

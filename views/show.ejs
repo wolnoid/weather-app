@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather for <%= name %></title>
+  </head>
+  <body>
+  <%- include('partials/_navbar.ejs') %>
+  <h1>Weather for <%= name %></h1>
+    <form action="/lists" method="POST">
+      <p>
+        Temperature: <%= main.temp %> <br>
+        Weather: <%= weather.main %> <br>
+      </p>
+      <p>
+        <label for="save">Save this location to a list? </label>
+        <select id="listId" name="listId">
+          <option value="" disabled selected hidden>Select a list</option>
+          <% if (lists.length > 0) {%>
+            <% lists.forEach((list) => { %>
+              <option value="<%= list._id %>"><%= list.name %></option>
+            <% })} %>
+          <option value="new list">new list</option>
+        </select>
+        <button type="submit">save</button>
+      </p>
+    </form>
+    <a href="/">back</a>
+  </body>
+  <script>
+    const form = document.querySelector('form');
+    const select = document.querySelector('#listId');
+
+    form.addEventListener('submit', (e) => {
+      if (!select.value) {
+        e.preventDefault(); // stop form submit
+      }
+    });
+  </script>
+</html>

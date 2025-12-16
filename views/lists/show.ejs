@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= list.owner.username %>'s <%= list.name %> list</title>
+  </head>
+  <body>
+    <%- include('../partials/_navbar.ejs') %>
+    <h1><%= list.owner.username %>'s <%= list.name %> list</h1>
+    <p>
+      Locations:
+      <% if (list.locations.length > 0) {%>
+        <ul>
+          <% list.locations.forEach((location) => { %>
+            <li>
+              <%= list.locations.name %>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else {%>
+        no locations have been added to this list yet.
+      <% } %>
+    </p>
+    <p>Description: <%= list.description %></p>
+
+    <% if (list.owner._id.equals(user._id)) { %>
+        <a href="/lists/<%= list._id %>/edit">Edit this list</a>
+        <form action="/lists/<%= list._id %>?_method=DELETE" method="POST">
+            <button type="submit">Delete this list</button>
+        </form>
+    <% } else { %>
+        <p></p>
+    <% } %>
+    </body>
+
+  </body>
+</html>
