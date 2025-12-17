@@ -11,18 +11,37 @@
     <form action="/lists" method="POST">
       <p>
         <label for="name">List name:</label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-        />
+        <input type="text" name="name" id="name" value="<%= draft && draft.name ? draft.name : '' %>"/>
         <br>
 
         <label for="description">Description:</label>
         <textarea
           name="description"
           id="description"
-          ></textarea>
+          ><%= draft && draft.description ? draft.description : '' %></textarea>
+        <br>
+
+        Locations:
+        <% let locations = '' %>
+        <% if ((draft && draft.locations ? draft.locations.length : 0) > 0) {%>
+          <ul name="list" id="list">
+            <% draft.locations.forEach((location) => { %>
+              <li>
+                <%= location.name %>, <%= location.zip %>
+                <button type="submit">remove</button>
+                <% locations += `${location.name}@${location.zip}#` %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else {%>
+          no locations have been added to this list yet.
+        <% } %>
+        <input type="hidden" name="locations" value="<%= locations %>"/>
+        <br>
+
+        <label for="zip">ZIP Code:</label>
+        <input type="text" name="zip" id="zip"/>
+        <button formaction="/lists/new" type="submit">Add Location</button> <%= message || '' %>
         <br>
 
         <button type="submit">Create List</button>

@@ -15,7 +15,7 @@ const listSchema = new mongoose.Schema({
     required: false,
   },
   locations: {
-    type: [Number],
+    type: [Object],
     required: false,
   },
 });

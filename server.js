@@ -52,35 +52,39 @@ app.use('/lists', listsController);
 
 
 app.get("/", (req, res) => {
-  res.render("index.ejs");
+  res.render("index.ejs", {
+    message: req.query.message
+  });
 });
 
-app.post('/weather', async (req, res) => {
+app.post('/weather', (req, res) => {
+  const zip = req.body.zip;
+  res.redirect(`/weather/${zip}`);
+});
+
+app.get('/weather/:zip', async (req, res) => {
   try {
-    const zip = req.body.zip
-    const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zip},us&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`
-    
+    const zip = req.params.zip;
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zip},us&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
     const response = await fetch(url);
     const data = await response.json();
 
-    console.log(data)
-    console.log(typeof data)
-    console.log(data.coord)
-    console.log(typeof data.coord)
+    if (data.cod !== 200) {
+      return res.redirect('/?message=' + encodeURIComponent('invalid location'));
+    }
 
-    const selectedUser = await User.findOne({ _id: req.session.user._id });
-    const populatedLists = await List.find({
-      owner: selectedUser
-    }).populate('owner');
+    const selectedUser = await User.findById(req.session.user._id);
+    const populatedLists = await List.find({ owner: selectedUser }).populate('owner');
 
     res.render('show.ejs', {
-        name: data.name,
-        main: data.main,
-        weather: data.weather[0],
-        lists: populatedLists,
+      name: data.name,
+      main: data.main,
+      weather: data.weather[0],
+      lists: populatedLists,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log(err);
     res.redirect('/');
   }
 });
