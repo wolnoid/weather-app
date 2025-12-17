@@ -11,7 +11,12 @@
     <form action="/lists" method="POST">
       <p>
         <label for="name">List name:</label>
-        <input type="text" name="name" id="name" value="<%= draft && draft.name ? draft.name : '' %>"/>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          value="<%= draft && draft.name ? draft.name : '' %>"
+        />
         <br>
 
         <label for="description">Description:</label>
@@ -25,10 +30,15 @@
         <% let locations = '' %>
         <% if ((draft && draft.locations ? draft.locations.length : 0) > 0) {%>
           <ul name="list" id="list">
-            <% draft.locations.forEach((location) => { %>
+            <% draft.locations.forEach((location, index) => { %>
               <li>
                 <%= location.name %>, <%= location.zip %>
-                <button type="submit">remove</button>
+                <button
+                  formaction="/lists/new_remove"
+                  type="submit"
+                  name="remove"
+                  value="<%= index %>"
+                  >remove</button>
                 <% locations += `${location.name}@${location.zip}#` %>
               </li>
             <% }) %>
@@ -41,8 +51,10 @@
 
         <label for="zip">ZIP Code:</label>
         <input type="text" name="zip" id="zip"/>
-        <button formaction="/lists/new" type="submit">Add Location</button> <%= message || '' %>
+        <button formaction="/lists/new_add" type="submit">Add Location</button> <%= message || '' %>
         <br>
+
+        <!-- <input type="hidden" name="redirectTo" value="/lists/new"> -->
 
         <button type="submit">Create List</button>
       </p>

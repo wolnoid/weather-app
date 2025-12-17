@@ -22,4 +22,14 @@
       </p>
     </form>
   </body>
+  <script>
+    const form = document.querySelector('form');
+    const select = document.querySelector('#zip');
+
+    form.addEventListener('submit', (e) => {
+      if (!select.value) {
+        e.preventDefault(); // stop form submit
+      }
+    });
+  </script>
 </html>

@@ -12,9 +12,9 @@
       Locations:
       <% if (list.locations.length > 0) {%>
         <ul>
-          <% list.locations.forEach((location) => { %>
+          <% list.locations.forEach((location, index) => { %>
             <li>
-              <%= location.name %> <%= location.zip %>
+              <%= location.name %>: <%= data[index].weather[0].description %>, <%= data[index].main.temp %>°
             </li>
           <% }) %>
         </ul>

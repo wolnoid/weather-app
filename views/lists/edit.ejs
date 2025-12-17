@@ -26,6 +26,31 @@
           ><%= list.description || '' %></textarea>
         <br>
 
+        Locations:
+        <% let locations = '' %>
+        <% if (list.locations.length > 0) {%>
+          <ul name="list" id="list">
+            <% list.locations.forEach((location) => { %>
+              <li>
+                <%= location.name %>, <%= location.zip %>
+                <button type="submit">remove</button>
+                <% locations += `${location.name}@${location.zip}#` %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else {%>
+          no locations have been added to this list yet.
+        <% } %>
+        <input type="hidden" name="locations" value="<%= locations %>"/>
+        <br>
+
+        <label for="zip">ZIP Code:</label>
+        <input type="text" name="zip" id="zip"/>
+        <button formaction="/lists/new" type="submit">Add Location</button> <%= message || '' %>
+        <br>
+
+        <input type="hidden" name="redirectTo" value="/lists/<%= list._id %>/edit">
+
         <button type="submit">Edit List</button>
       </p>
     </form>
