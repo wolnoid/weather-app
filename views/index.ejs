@@ -8,7 +8,7 @@
   <body>
   <%- include('partials/_navbar.ejs') %>
   <h1>Check the weather</h1>
-    <form action="/weather/" method="POST">
+    <form action="/" method="POST">
       <p>
         <label for="zip">ZIP Code:</label>
         <input
@@ -23,12 +23,13 @@
     </form>
   </body>
   <script>
+    // prevent empty form submittal
     const form = document.querySelector('form');
-    const select = document.querySelector('#zip');
+    const zip = document.querySelector('#zip');
 
-    form.addEventListener('submit', (e) => {
-      if (!select.value) {
-        e.preventDefault(); // stop form submit
+    form.addEventListener('submit', (event) => {
+      if (!zip.value) {
+        event.preventDefault();
       }
     });
   </script>

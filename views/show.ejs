@@ -8,7 +8,7 @@
   <body>
   <%- include('partials/_navbar.ejs') %>
   <h1>Weather for <%= name %></h1>
-    <form action="/lists" method="POST">
+    <form action="/weather/<%= zip %>" method="POST">
       <p>
         Temperature: <%= main.temp %> <br>
         Weather: <%= weather.main %> <br>
@@ -23,18 +23,24 @@
             <% })} %>
           <option value="new list">new list</option>
         </select>
+
+        <input type="hidden" name="name" value="<%= name %>">        
+        <input type="hidden" name="zip" value="<%= zip %>">
+
         <button type="submit">save</button>
+        <%= message || '' %>
       </p>
     </form>
     <a href="/">back</a>
   </body>
   <script>
+    // prevent empty form submittal
     const form = document.querySelector('form');
-    const select = document.querySelector('#listId');
+    const list = document.querySelector('#listId');
 
-    form.addEventListener('submit', (e) => {
-      if (!select.value) {
-        e.preventDefault(); // stop form submit
+    form.addEventListener('submit', (event) => {
+      if (!list.value) {
+        event.preventDefault();
       }
     });
   </script>

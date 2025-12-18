@@ -1,10 +1,10 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 
-const User = require('../models/user.js');
-const List = require('../models/list.js');
+const User = require('../models/user.js')
+const List = require('../models/list.js')
 
-const isSignedIn = require('../middleware/is-signed-in.js');
+const isSignedIn = require('../middleware/is-signed-in.js')
 const validateZip = require('../functions/validateZip.js')
 const parseSession = require('../functions/parseSession.js')
 const validateListName = require('../functions/validateListName.js')
@@ -18,15 +18,14 @@ router.get('/new', isSignedIn, async (req, res) => {
     res.render('lists/new.ejs', { draft, message })
     
   } catch (error) {
-    console.log(error);
-    res.redirect('/lists/new?draft=1');
+    console.log(error)
+    res.redirect('/lists/new?draft=1')
   }
 })
 
 router.post('/', isSignedIn, async (req, res) => {
   try {
     console.log(req.body)
-
     req.session.draft = await parseSession(req.body)
 
     if (req.body.add || req.body.remove) {
@@ -37,17 +36,17 @@ router.post('/', isSignedIn, async (req, res) => {
     let nameValid = await validateListName(req.body, req.session)
     if (!nameValid[0]) return res.redirect(nameValid[1])
     
-    const newList = new List(req.session.draft);
-    newList.owner = req.session.user._id;
-    await newList.save();
+    const newList = new List(req.session.draft)
+    newList.owner = req.session.user._id
+    await newList.save()
 
-    res.redirect('users/profile');
+    res.redirect('users/profile')
 
   } catch (error) {
-    console.log(error);
-    res.redirect('/lists/new?draft=1');
+    console.log(error)
+    res.redirect('/lists/new?draft=1')
   }
-});
+})
 
 router.get('/:listId', isSignedIn, async (req, res) => {
   try {
@@ -55,9 +54,9 @@ router.get('/:listId', isSignedIn, async (req, res) => {
 
     let weatherData = []
     for (let location of list.locations) {
-      const url = `https://api.openweathermap.org/data/2.5/weather?zip=${location['zip']},us&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
-      const response = await fetch(url);
-      const data = await response.json();
+      const url = `https://api.openweathermap.org/data/2.5/weather?zip=${location['zip']},us&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`
+      const response = await fetch(url)
+      const data = await response.json()
       weatherData.push(data)
     }
     res.render('lists/show.ejs', {
@@ -66,25 +65,25 @@ router.get('/:listId', isSignedIn, async (req, res) => {
       data: weatherData,
     })
   } catch (error) {
-    console.log(error);
-    res.redirect('../users/profile');
+    console.log(error)
+    res.redirect('../users/profile')
   }
-});
+})
 
 router.delete('/:listId', isSignedIn, async (req, res) => {
   try {
-    const list = await List.findById(req.params.listId);
+    const list = await List.findById(req.params.listId)
     if (list.owner.equals(req.session.user._id)) {
-      await list.deleteOne();
-      res.redirect('../users/profile');
+      await list.deleteOne()
+      res.redirect('../users/profile')
     } else {
-      res.send("You don't have permission to do that.");
+      res.send("You don't have permission to do that.")
     }
   } catch (error) {
-    console.error(error);
-    res.redirect('../users/profile');
+    console.error(error)
+    res.redirect('../users/profile')
   }
-});
+})
 
 router.get('/:listId/edit', isSignedIn, async (req, res) => {
   try {
@@ -100,12 +99,12 @@ router.get('/:listId/edit', isSignedIn, async (req, res) => {
     res.render('lists/edit.ejs', {
       list: draft || list,
       message
-    });
+    })
   } catch (error) {
-    console.error(error);
-    res.redirect('../users/profile');
+    console.error(error)
+    res.redirect('../users/profile')
   }
-});
+})
 
 router.put('/:listId', isSignedIn, async (req, res) => {
   try {
@@ -119,17 +118,17 @@ router.put('/:listId', isSignedIn, async (req, res) => {
     let nameValid = await validateListName(req.body, req.session)
     if (!nameValid[0]) return res.redirect(nameValid[1])
 
-    const currentList = await List.findById(req.params.listId);
+    const currentList = await List.findById(req.params.listId)
     if (currentList.owner.equals(req.session.user._id)) {
-      await currentList.updateOne(req.session.draft);
-      res.redirect(`/lists/${req.params.listId}`);
+      await currentList.updateOne(req.session.draft)
+      res.redirect(`/lists/${req.params.listId}`)
     } else {
-      res.send("You don't have permission to do that.");
+      res.send("You don't have permission to do that.")
     }
   } catch (error) {
-    console.log(error);
-    res.redirect(`/lists/${req.params.listId}`);
+    console.log(error)
+    res.redirect(`/lists/${req.params.listId}`)
   }
-});
+})
 
-module.exports = router;
+module.exports = router
