@@ -20,6 +20,7 @@ const listSchema = new mongoose.Schema({
   },
 });
 
+listSchema.index({ owner: 1, name: 1 }, { unique: true });
 const List = mongoose.model('List', listSchema);
 
 module.exports = List;

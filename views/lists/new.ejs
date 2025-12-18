@@ -34,7 +34,7 @@
               <li>
                 <%= location.name %>, <%= location.zip %>
                 <button
-                  formaction="/lists/new_remove"
+                  formaction="/lists"
                   type="submit"
                   name="remove"
                   value="<%= index %>"
@@ -51,7 +51,12 @@
 
         <label for="zip">ZIP Code:</label>
         <input type="text" name="zip" id="zip"/>
-        <button formaction="/lists/new_add" type="submit">Add Location</button> <%= message || '' %>
+        <button
+          formaction="/lists"
+          type="submit"
+          name="add"
+          value="adding"
+          >Add Location</button> <%= message || '' %>
         <br>
 
         <!-- <input type="hidden" name="redirectTo" value="/lists/new"> -->

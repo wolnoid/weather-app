@@ -6,6 +6,7 @@ const List = require('../models/list.js');
 
 const isSignedIn = require('../middleware/is-signed-in.js');
 
+// transforms list of zips from string to list of objects
 function parser(locationsString) {
   if (locationsString && locationsString.includes('#')) {
     let locationsList = []
@@ -30,14 +31,15 @@ function parser(locationsString) {
 
 router.get('/new', isSignedIn, async (req, res) => {
   try {
-    const draft = req.session.draft
-    req.session.draft = null
+    let draft = null
+    req.query.draft ? draft = req.session.draft : req.session.draft = null
     let message = null
+    if (req.query.error === 'name') message = 'List must have a valid name'
+    if (req.query.error === 'duplicate') message = 'You already have a list with this name'
     let tryFetch = true
 
-    console.log(draft)
-
-    if (draft && draft.zip) {
+    if (!req.query.error && draft && draft.zip) {
+      // reject duplicate zips in list
       for (let location of draft.locations) {
         if (location.zip == draft.zip) {
           message = 'location is already in list'
@@ -45,6 +47,7 @@ router.get('/new', isSignedIn, async (req, res) => {
           break
         }
       }
+      // verify valid zip and add to list of zips
       if (tryFetch) {
         const url = `https://api.openweathermap.org/data/2.5/weather?zip=${draft.zip},us&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
         const response = await fetch(url);
@@ -66,15 +69,46 @@ router.get('/new', isSignedIn, async (req, res) => {
     })
   } catch (error) {
     console.log(error);
-    res.redirect('/lists/new');
+    res.redirect('/lists/new?draft=1');
   } 
 })
 
 router.post('/', isSignedIn, async (req, res) => {
   try {
-    req.body.locations = parser(req.body.locations)
+    console.log(req.body)
 
-    const newList = new List(req.body);
+    // store draft data in sessions object
+    req.session.draft = {
+      name: req.body.name.trim(),
+      description: req.body.description,
+      locations: parser(req.body.locations),
+      zip: req.body.zip,
+    }
+
+    // add or remove locations from draft
+    if (req.body.add || req.body.remove) {
+      if (req.body.remove) req.session.draft.locations.splice(Number(req.body.remove), 1)
+      return res.redirect(`/lists/new?draft=1`)
+    }
+
+    // reject nameless list while retaining draft data
+    if (!req.body.name || !req.body.name.trim()) {
+      return res.redirect('/lists/new?draft=1&error=name');
+    }
+
+    // reject if user already has a list with this name
+    const selectedUser = await User.findOne({ _id: req.session.user._id });
+    const populatedLists = await List.find({
+      owner: selectedUser })
+      .populate('owner');
+    for (let list of populatedLists) {
+      if (list.name.toLowerCase() == req.session.draft.name.toLowerCase()) {
+        return res.redirect('/lists/new?draft=1&error=duplicate')
+      }
+    }
+    
+    // create and save list to database
+    const newList = new List(req.session.draft);
     newList.owner = req.session.user._id;
     await newList.save();
 
@@ -82,33 +116,8 @@ router.post('/', isSignedIn, async (req, res) => {
 
   } catch (error) {
     console.log(error);
-    res.redirect('/lists/new');
+    res.redirect('/lists/new?draft=1');
   }
-});
-
-router.post('/new_add', isSignedIn, (req, res) => {
-  req.session.draft = {
-    name: req.body.name,
-    description: req.body.description,
-    locations: req.body.locations,
-    zip: req.body.zip,
-  }
-  req.session.draft.locations = parser(req.body.locations)
-
-  res.redirect(`/lists/new`);
-});
-
-router.post('/new_remove', isSignedIn, (req, res) => {
-  req.session.draft = {
-    name: req.body.name,
-    description: req.body.description,
-    locations: req.body.locations,
-    zip: req.body.zip,
-  }
-  req.session.draft.locations = parser(req.body.locations)
-  req.session.draft.locations.splice(Number(req.body.remove), 1)
-
-  res.redirect(`/lists/new`);
 });
 
 router.get('/:listId', isSignedIn, async (req, res) => {

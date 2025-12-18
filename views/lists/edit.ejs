@@ -30,10 +30,15 @@
         <% let locations = '' %>
         <% if (list.locations.length > 0) {%>
           <ul name="list" id="list">
-            <% list.locations.forEach((location) => { %>
+            <% list.locations.forEach((location, index) => { %>
               <li>
                 <%= location.name %>, <%= location.zip %>
-                <button type="submit">remove</button>
+                <button
+                  formaction="/lists/new_edit"
+                  type="submit"
+                  name="remove"
+                  value="<%= index %>"
+                  >remove</button>
                 <% locations += `${location.name}@${location.zip}#` %>
               </li>
             <% }) %>
@@ -46,10 +51,10 @@
 
         <label for="zip">ZIP Code:</label>
         <input type="text" name="zip" id="zip"/>
-        <button formaction="/lists/new" type="submit">Add Location</button> <%= message || '' %>
+        <button formaction="/lists/new_edit" type="submit">Add Location</button> <%= message || '' %>
         <br>
 
-        <input type="hidden" name="redirectTo" value="/lists/<%= list._id %>/edit">
+        <!-- <input type="hidden" name="redirectTo" value="/lists/<%= list._id %>/edit"> -->
 
         <button type="submit">Edit List</button>
       </p>
