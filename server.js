@@ -7,13 +7,8 @@ const methodOverride = require('method-override');
 const session = require('express-session');
 const MongoStore = require("connect-mongo").default;
 
-
-
 const List = require('./models/list.js');
 const User = require('./models/user.js');
-
-
-
 
 const isSignedIn = require("./middleware/is-signed-in.js");
 const passUserToView = require("./middleware/pass-user-to-view.js");
@@ -46,8 +41,6 @@ app.use(passUserToView);
 app.use('/auth', authController);
 app.use('/users', usersController);
 app.use('/lists', listsController);
-
-
 
 
 

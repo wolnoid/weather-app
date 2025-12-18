@@ -5,97 +5,9 @@ const User = require('../models/user.js');
 const List = require('../models/list.js');
 
 const isSignedIn = require('../middleware/is-signed-in.js');
-
-// transforms list of zips from string to list of objects
-function parseList(locationsString) {
-  if (locationsString && locationsString.includes('#')) {
-    let locationsList = []
-    let split = locationsString.split('#')
-    for (let i = 0; i < split.length; i++) {
-      if (!split[i]) continue
-
-      let splitLocation = split[i].split('@')
-      let location = {
-        name: splitLocation[0],
-        zip: splitLocation[1]
-      }
-      locationsList.push(location)
-    }
-    return locationsList
-  } else {
-    return []
-  }
-}
-
-// validates zip codes for /new and /edit
-async function validateZip(req) {
-  let draft = null
-  req.query.draft ? draft = req.session.draft : req.session.draft = null
-  let message = null
-  if (req.query.error === 'name') message = 'List must have a valid name'
-  if (req.query.error === 'duplicate') message = 'You already have a list with this name'
-
-  if (!req.query.error && draft && draft.zip) {
-    // reject duplicate zips in list
-    for (let location of draft.locations) {
-      if (location.zip == draft.zip) {
-        message = 'location is already in list'
-        return [draft, message]
-      }
-    }
-    // verify valid zip and add to list of zips
-    const url = `https://api.openweathermap.org/data/2.5/weather?zip=${draft.zip},us&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (data.cod !== 200) {
-      message = 'invalid location'
-    } else {
-      draft.locations.push({
-        name: data.name,
-        zip: draft.zip
-      })
-    }
-  }
-  return [draft, message]
-}
-
-// parse req object and store in session object
-function parseSession(reqBody) {
-  draft = {
-    name: reqBody.name.trim(),
-    description: reqBody.description,
-    locations: parseList(reqBody.locations),
-    zip: reqBody.zip,
-    source: reqBody.source,
-  }
-  return draft
-}
-
-async function validateListName(reqBody, reqSession) {
-  // reject nameless list while retaining draft data, GET /new
-  if (!reqBody.name || !reqBody.name.trim()) {
-    return [false, `${reqBody.source}?draft=1&error=name`]
-  }
-
-  console.log(reqBody)
-  console.log(reqSession)
-
-  // reject if user already has a list with this name, GET /new
-  const selectedUser = await User.findOne({ _id: reqSession.user._id });
-  const populatedLists = await List.find({
-    owner: selectedUser })
-    .populate('owner');
-  for (let list of populatedLists) {
-    if (list.name.toLowerCase() == reqSession.draft.name.toLowerCase()) {
-      if (list._id == reqBody.source.split('/')[2]) break
-      return [false, `${reqBody.source}?draft=1&error=duplicate`]
-    }
-  }
-  return [true]
-}
-
-
+const validateZip = require('../functions/validateZip.js')
+const parseSession = require('../functions/parseSession.js')
+const validateListName = require('../functions/validateListName.js')
 
 router.get('/new', isSignedIn, async (req, res) => {
   try {
@@ -108,7 +20,7 @@ router.get('/new', isSignedIn, async (req, res) => {
   } catch (error) {
     console.log(error);
     res.redirect('/lists/new?draft=1');
-  } 
+  }
 })
 
 router.post('/', isSignedIn, async (req, res) => {
