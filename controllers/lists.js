@@ -27,46 +27,51 @@ function parser(locationsString) {
   }
 }
 
+// validates zip codes for /new and /edit
+async function validateZip(req) {
+  let draft = null
+  req.query.draft ? draft = req.session.draft : req.session.draft = null
+  let message = null
+  if (req.query.error === 'name') message = 'List must have a valid name'
+  if (req.query.error === 'duplicate') message = 'You already have a list with this name'
+
+  if (!req.query.error && draft && draft.zip) {
+    // reject duplicate zips in list
+    for (let location of draft.locations) {
+      if (location.zip == draft.zip) {
+        message = 'location is already in list'
+        return [draft, message]
+      }
+    }
+    // verify valid zip and add to list of zips
+    const url = `https://api.openweathermap.org/data/2.5/weather?zip=${draft.zip},us&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.cod !== 200) {
+      message = 'invalid location'
+    } else {
+      draft.locations.push({
+        name: data.name,
+        zip: draft.zip
+      })
+    }
+  }
+  return [draft, message]
+}
+
 
 
 router.get('/new', isSignedIn, async (req, res) => {
   try {
-    let draft = null
-    req.query.draft ? draft = req.session.draft : req.session.draft = null
-    let message = null
-    if (req.query.error === 'name') message = 'List must have a valid name'
-    if (req.query.error === 'duplicate') message = 'You already have a list with this name'
-    let tryFetch = true
+    let output = await validateZip(req)
+    let draft = output[0]
+    let message = output[1]
 
-    if (!req.query.error && draft && draft.zip) {
-      // reject duplicate zips in list
-      for (let location of draft.locations) {
-        if (location.zip == draft.zip) {
-          message = 'location is already in list'
-          tryFetch = false
-          break
-        }
-      }
-      // verify valid zip and add to list of zips
-      if (tryFetch) {
-        const url = `https://api.openweathermap.org/data/2.5/weather?zip=${draft.zip},us&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.cod !== 200) {
-          message = 'invalid location'
-        } else {
-          draft.locations.push({
-            name: data.name,
-            zip: draft.zip
-          })
-        }
-      }
-    }
-    res.render('lists/new.ejs', {
-      draft,
-      message,
-    })
+    // if (draft && (draft.source !== '/lists/new')) {
+    //   return res.render('lists/edit.ejs', { list: draft, message })
+    // }
+    res.render('lists/new.ejs', { draft, message })
   } catch (error) {
     console.log(error);
     res.redirect('/lists/new?draft=1');
@@ -75,28 +80,32 @@ router.get('/new', isSignedIn, async (req, res) => {
 
 router.post('/', isSignedIn, async (req, res) => {
   try {
-    console.log(req.body)
-
     // store draft data in sessions object
     req.session.draft = {
       name: req.body.name.trim(),
       description: req.body.description,
       locations: parser(req.body.locations),
       zip: req.body.zip,
+      source: req.body.source,
     }
 
-    // add or remove locations from draft
+    // potentially remove location from draft, GET /new
     if (req.body.add || req.body.remove) {
-      if (req.body.remove) req.session.draft.locations.splice(Number(req.body.remove), 1)
+      if (req.body.remove) {
+        req.session.draft.locations.splice(Number(req.body.remove), 1)
+      }
+      if (req.session.draft.source !== '/lists/new') {
+        return res.redirect(`${req.body.source}?draft=1`)
+      }
       return res.redirect(`/lists/new?draft=1`)
     }
 
-    // reject nameless list while retaining draft data
+    // reject nameless list while retaining draft data, GET /new
     if (!req.body.name || !req.body.name.trim()) {
       return res.redirect('/lists/new?draft=1&error=name');
     }
 
-    // reject if user already has a list with this name
+    // reject if user already has a list with this name, GET /new
     const selectedUser = await User.findOne({ _id: req.session.user._id });
     const populatedLists = await List.find({
       owner: selectedUser })
@@ -159,12 +168,17 @@ router.delete('/:listId', isSignedIn, async (req, res) => {
 
 router.get('/:listId/edit', isSignedIn, async (req, res) => {
   try {
-    const list = await List.findById(req.params.listId)
-    .populate('owner')
-    let message = undefined
+    const output = await validateZip(req)
+    const draft = output[0]
+    const message = output[1]
+    let list = null
+
+    if (!draft) {
+      list = await List.findById(req.params.listId).populate('owner')
+    } else draft._id = req.params.listId
 
     res.render('lists/edit.ejs', {
-      list,
+      list: draft || list,
       message
     });
   } catch (error) {
@@ -175,6 +189,11 @@ router.get('/:listId/edit', isSignedIn, async (req, res) => {
 
 router.put('/:listId', isSignedIn, async (req, res) => {
   try {
+    console.log('req: ')
+    console.log(req.body)
+    console.log('listID: ')
+    console.log(req.params.listId)
+
     const currentList = await List.findById(req.params.listId);
     
     if (currentList.owner.equals(req.session.user._id)) {

@@ -4,6 +4,7 @@ const listSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -15,7 +16,11 @@ const listSchema = new mongoose.Schema({
     required: false,
   },
   locations: {
-    type: [Object],
+    type: [
+      {
+        name: String,
+        zip: String,
+      }],
     required: false,
   },
 });
