@@ -22,7 +22,7 @@ function parseSession(reqBody) {
   }
   draft = {
     name: reqBody.name.trim(),
-    description: reqBody.description.trim(),
+    description: reqBody.description,
     locations: parseList(reqBody.locations),
     zip: reqBody.zip.trim(),
     source: reqBody.source,

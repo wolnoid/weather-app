@@ -18,7 +18,7 @@ const authController = require('./controllers/auth.js')
 const usersController = require('./controllers/users.js')
 const listsController = require('./controllers/lists.js')
 
-const port = process.env.PORT || '3001'
+const port = process.env.PORT || '3002'
 const path = require('path');
 
 mongoose.connect(process.env.MONGODB_URI)
