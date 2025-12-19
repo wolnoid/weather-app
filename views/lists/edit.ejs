@@ -3,30 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/lists/edit.css">
     <title><%= user.username %>'s <%= list.name %> list</title>
   </head>
   <body>
     <%- include('../partials/_navbar.ejs') %>
+    <div id="container">
   <h1>Edit a List</h1>
     <form action="/lists/<%= list._id %>?_method=PUT" method="POST">
-      <p>
         <label for="name">List name:</label>
         <input
           type="text"
           name="name"
           id="name"
+          class="input"
           value="<%= list.name || '' %>"
-        />
-        <br>
+        /><br>
 
-        <label for="description">Description:</label>
+        <label for="description" id="descLabel" class="label">Description:</label>
         <textarea
           name="description"
           id="description"
-          ><%= list.description || '' %></textarea>
-        <br>
+          class="input"
+          ><%= list.description || '' %></textarea><br>
 
-        Locations:
+        <h4>Locations:</h4>
         <% let locations = '' %>
         <% if (list.locations.length > 0) {%>
           <ul name="list" id="list">
@@ -36,6 +38,8 @@
                 <button
                   type="submit"
                   name="remove"
+                  id="remove"
+                  class="button"
                   value="<%= index %>"
                   >remove</button>
                 <% locations += `${location.name}@${location.zip}#` %>
@@ -48,19 +52,20 @@
         <input type="hidden" name="locations" value="<%= locations %>"/>
         <br>
 
-        <label for="zip">ZIP Code:</label>
-        <input type="text" name="zip" id="zip"/>
+        <label for="zip" class="label">ZIP Code:</label>
+        <input type="text" name="zip" id="zip" class="input"/>
         <button
           type="submit"
           name="add"
+          id="add"
+          class="button"
           value="adding"
-          >Add Location</button> <%= message || '' %>
-        <br>
+          >Add Location</button><br><%= message || '' %><br>
 
         <input type="hidden" name="source" value="/lists/<%= list._id %>/edit">
 
-        <button type="submit">Edit List</button>
-      </p>
+        <button type="submit" id="create" class="button">Edit List</button>
     </form>
+  </div>
   </body>
 </html>

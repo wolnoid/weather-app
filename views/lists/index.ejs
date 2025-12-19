@@ -3,24 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/lists/index.css">
     <title><%= user.username %>'s weather lists</title>
   </head>
   <body>
     <%- include('../partials/_navbar.ejs') %>
-    <h1><%= user.username %>'s weather lists</h1>
-    <% if (lists.length > 0) {%>
-    <ul>
+    <div id="container">
+      <h1><%= user.username %>'s weather lists</h1>
+      <% if (lists.length > 0) {%>
+      <ul>
         <% lists.forEach((list) => { %>
         <li>
             <a href="/lists/<%= list._id %>"><%= list.name %></a>
         </li>
         <% }) %>
-    </ul>
-      <% } else {%>
-            You haven't created any lists yet.
-      <% } %>
-    <p>
-      <a href="../lists/new">Create a new list</a>
-    </p>
+      </ul>
+        <% } else {%>
+          <h2>You haven't created any lists yet.</h2>
+        <% } %>
+      <a href="../lists/new" id="link">Create a new list</a>
+    </div>
   </body>
 </html>

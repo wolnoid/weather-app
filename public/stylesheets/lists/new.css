@@ -1,0 +1,54 @@
+li {
+    list-style-position: inside;
+    font-size: 24px;
+    font-weight: normal;
+    text-align: center;
+    margin-bottom: 8px;
+    a {text-decoration: none;}
+}
+
+.label {
+    font-size: 24px;
+}
+
+#name {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+#zip {
+    margin-bottom: 15px;
+}
+
+h4 {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+#add {
+  padding: 3px 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#remove {
+    padding: 0px 5px;
+    margin-left: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#zip {
+    margin-top: 25px;
+    font-size: 20px;
+    font-weight: bold;
+    width: 70px;
+    text-align: center;
+}
+
+#create {
+    margin-top: 30px;
+    padding: 5px 10px;
+    font-size: 22px;
+    font-weight: bold;
+}

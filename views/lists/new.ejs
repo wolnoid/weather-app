@@ -3,64 +3,68 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/lists/new.css">
     <title><%= user.username %>'s new weather list</title>
   </head>
   <body>
     <%- include('../partials/_navbar.ejs') %>
+    <div id="container">
   <h1>Create a List</h1>
     <form action="/lists" method="POST">
-      <p>
-        <label for="name">List name:</label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          value="<%= draft && draft.name ? draft.name : '' %>"
-        />
-        <br>
+      <label for="name" class="label">List name:</label>
+      <input
+        type="text"
+        name="name"
+        id="name"
+        class="input"
+        value="<%= draft && draft.name ? draft.name : '' %>"
+      /><br>
 
-        <label for="description">Description:</label>
-        <textarea
-          name="description"
-          id="description"
-          ><%= draft && draft.description ? draft.description : '' %></textarea>
-        <br>
+      <label for="description" id="descLabel" class="label">Description:</label>
+      <textarea
+        name="description"
+        id="description"
+        class="input"
+        ><%= draft && draft.description ? draft.description : '' %></textarea><br>
 
-        Locations:
-        <% let locations = '' %>
-        <% if ((draft && draft.locations ? draft.locations.length : 0) > 0) {%>
-          <ul name="list" id="list">
-            <% draft.locations.forEach((location, index) => { %>
-              <li>
-                <%= location.name %>, <%= location.zip %>
-                <button
-                  type="submit"
-                  name="remove"
-                  value="<%= index %>"
-                  >remove</button>
-                <% locations += `${location.name}@${location.zip}#` %>
-              </li>
-            <% }) %>
-          </ul>
-        <% } else {%>
-          no locations have been added to this list yet.
-        <% } %>
-        <input type="hidden" name="locations" value="<%= locations %>"/>
-        <br>
+      <h4>Locations:</h4>
+      <% let locations = '' %>
+      <% if ((draft && draft.locations ? draft.locations.length : 0) > 0) {%>
+        <ul name="list" id="list">
+          <% draft.locations.forEach((location, index) => { %>
+            <li>
+              <%= location.name %>, <%= location.zip %>
+              <button
+                type="submit"
+                name="remove"
+                id="remove"
+                class="button"
+                value="<%= index %>"
+                >remove</button>
+              <% locations += `${location.name}@${location.zip}#` %>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else {%>
+        no locations have been added to this list yet.
+      <% } %>
+      <input type="hidden" name="locations" value="<%= locations %>"/><br>
 
-        <label for="zip">ZIP Code:</label>
-        <input type="text" name="zip" id="zip"/>
-        <button
-          type="submit"
-          name="add"
-          value="adding"
-          >Add Location</button> <%= message || '' %>
-        <br>
+      <label for="zip" class="label">ZIP Code:</label>
+      <input type="text" name="zip" id="zip" class="input"/>
+      <button
+        type="submit"
+        name="add"
+        id="add"
+        class="button"
+        value="adding"
+        >Add Location</button><br><%= message || '' %><br>
 
-        <input type="hidden" name="source" value="/lists/new">
+      <input type="hidden" name="source" value="/lists/new">
 
-        <button type="submit">Create List</button>
-      </p>
+      <button type="submit" id="create" class="button">Create List</button>
     </form>
+    </div>
   </body>
 </html>

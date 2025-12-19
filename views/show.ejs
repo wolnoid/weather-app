@@ -3,35 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/show.css">
     <title>Weather for <%= name %></title>
   </head>
   <body>
-  <%- include('partials/_navbar.ejs') %>
-  <h1>Weather for <%= name %></h1>
-    <form action="/weather/<%= zip %>" method="POST">
-      <p>
-        Temperature: <%= main.temp %> <br>
-        Weather: <%= weather.main %> <br>
-      </p>
-      <p>
-        <label for="save">Save this location to a list? </label>
-        <select id="listId" name="listId">
-          <option value="" disabled selected hidden>Select a list</option>
-          <% if (lists.length > 0) {%>
-            <% lists.forEach((list) => { %>
-              <option value="<%= list._id %>"><%= list.name %></option>
-            <% })} %>
-          <option value="new list">new list</option>
-        </select>
+    <%- include('partials/_navbar.ejs') %>
+    <div id="container">
+      <h2>Weather for</h2>
+      <h1><%= name %></h1>
+      <form action="/weather/<%= zip %>" method="POST">
+      <h2 id="temperature">
+        Temperature: <%= main.temp %>°
+      </h2>
+      <h2 id="weather">
+        Conditions: <%= weather.main %>
+      </h2>
+      <label for="save" id="saveLabel">Save this location to a list? </label><br>
+      <select id="listId" name="listId">
+        <option value="" disabled selected hidden>Select a list</option>
+        <% if (lists.length > 0) {%>
+          <% lists.forEach((list) => { %>
+            <option value="<%= list._id %>"><%= list.name %></option>
+          <% })} %>
+        <option value="new list">new list</option>
+      </select>
 
-        <input type="hidden" name="name" value="<%= name %>">        
-        <input type="hidden" name="zip" value="<%= zip %>">
+      <input type="hidden" name="name" value="<%= name %>">        
+      <input type="hidden" name="zip" value="<%= zip %>">
 
-        <button type="submit">save</button>
-        <%= message || '' %>
-      </p>
-    </form>
-    <a href="/">back</a>
+          <button type="submit" id="saveButton">save</button><br>
+          <%= message || '' %>
+        </form>
+        <a href="/" id="back">back</a>
+    </div>
   </body>
   <script>
     // prevent empty form submittal

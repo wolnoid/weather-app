@@ -1,0 +1,53 @@
+/* 1. Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Aptos', sans-serif;
+  font-size: 22px;
+  color: rgb(255, 255, 255);
+  
+  /* 2. Fix Dimensions */
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+
+  /* 3. Background Settings */
+  background-image: url(../assets/background.png);
+  background-color: #282b2e;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
+  /* 4. Layout */
+  display: flex;
+  flex-direction: column;
+
+  /* 5. Link Format */
+  a {color: rgb(255, 255, 255);}
+  a:hover {color: rgb(23, 165, 201);}
+}
+
+#container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 25px;
+  border-radius: 15px;
+  margin: auto;
+  max-width: fit-content;
+  max-height: fit-content;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+h1 {
+    margin-bottom: 30px;
+}

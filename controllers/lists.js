@@ -25,7 +25,6 @@ router.get('/new', isSignedIn, async (req, res) => {
 
 router.post('/', isSignedIn, async (req, res) => {
   try {
-    console.log(req.body)
     req.session.draft = await parseSession(req.body)
 
     if (req.body.add || req.body.remove) {
@@ -48,7 +47,7 @@ router.post('/', isSignedIn, async (req, res) => {
   }
 })
 
-router.get('/:listId', isSignedIn, async (req, res) => {
+router.get('/:listId', async (req, res) => {
   try {
     const list = await List.findById(req.params.listId).populate('owner')
 

@@ -3,35 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/lists/show.css">
     <title><%= list.owner.username %>'s <%= list.name %> list</title>
   </head>
   <body>
     <%- include('../partials/_navbar.ejs') %>
-    <h1><%= list.owner.username %>'s <%= list.name %> list</h1>
-    <p>
-      Locations:
-      <% if (list.locations.length > 0) {%>
-        <ul>
-          <% list.locations.forEach((location, index) => { %>
-            <li>
-              <%= location.name %>: <%= data[index].weather[0].description %>, <%= data[index].main.temp %>°
-            </li>
-          <% }) %>
-        </ul>
-      <% } else {%>
-        no locations have been added to this list yet.
-      <% } %>
-    </p>
-    <p>Description: <%= list.description %></p>
+    <div id="container">
+      <h2><%= list.owner.username %>'s</h2>
+      <h1><%= list.name %> list</h1>
+        <% if (list.locations.length > 0) {%>
+          <ul>
+            <% list.locations.forEach((location, index) => { %>
+              <li>
+                <%= location.name %>: <%= data[index].weather[0].description %>, <%= data[index].main.temp %>°
+              </li>
+            <% }) %>
+          </ul>
+        <% } else {%>
+          no locations have been added to this list yet.
+        <% } %>
+      <p>Description:<br> <%= list.description %></p>
 
-    <% if (list.owner._id.equals(user._id)) { %>
-        <a href="/lists/<%= list._id %>/edit">Edit this list</a>
-        <form action="/lists/<%= list._id %>?_method=DELETE" method="POST">
-            <button type="submit">Delete this list</button>
-        </form>
-    <% } else { %>
-        <p></p>
-    <% } %>
+      <% if (user && user._id && list.owner._id.equals(user._id)) { %>
+          <a href="/lists/<%= list._id %>/edit" id="edit">Edit this list</a>
+          <form action="/lists/<%= list._id %>?_method=DELETE" method="POST">
+              <button type="submit" id="delete">Delete this list</button>
+          </form>
+      <% } %>
+    </div>
     </body>
 
   </body>

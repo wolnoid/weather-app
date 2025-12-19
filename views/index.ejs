@@ -3,34 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>home</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/index.css">
+    <title>Weather App</title>
   </head>
   <body>
-  <%- include('partials/_navbar.ejs') %>
-  <h1>Check the weather</h1>
-    <form action="/" method="POST">
-      <p>
-        <label for="zip">ZIP Code:</label>
+    <%- include('partials/_navbar.ejs') %>
+    <div id="container">
+      <h1>Check weather for</h1>
+      <form action="/" method="POST" id="form">
+        <label for="zip" id="label">Zip Code:</label>
         <input
           type="text"
           name="zip"
           id="zip"
         />
-        <br>
-        <button type="submit">Get weather</button>
         <%= message || '' %>
-      </p>
-    </form>
-  </body>
-  <script>
-    // prevent empty form submittal
-    const form = document.querySelector('form');
-    const zip = document.querySelector('#zip');
+        <br>
+        <button type="submit" id="get" class="button">Get Weather</button>
+      </form>
+    </div>
+    <script>
+      // prevent empty form submittal
+      const form = document.querySelector('form');
+      const zip = document.querySelector('#zip');
 
-    form.addEventListener('submit', (event) => {
-      if (!zip.value) {
-        event.preventDefault();
-      }
-    });
-  </script>
+      form.addEventListener('submit', (event) => {
+        if (!zip.value) {
+          event.preventDefault();
+        }
+      });
+    </script>
+  </body>
+  
 </html>
+
