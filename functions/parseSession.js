@@ -22,9 +22,9 @@ function parseSession(reqBody) {
   }
   draft = {
     name: reqBody.name.trim(),
-    description: reqBody.description,
+    description: reqBody.description.trim(),
     locations: parseList(reqBody.locations),
-    zip: reqBody.zip,
+    zip: reqBody.zip.trim(),
     source: reqBody.source,
   }
   return draft
